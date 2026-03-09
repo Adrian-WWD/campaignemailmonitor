@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaign Email Monitor — WestWest Digital</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --border2: #2e3448;
+    --accent: #4f8ef7;
+    --accent2: #7eb8f7;
+    --green: #3ecf8e;
+    --yellow: #f7c948;
+    --red: #f76e6e;
+    --purple: #a78bfa;
+    --text: #e8eaf0;
+    --text2: #8b90a0;
+    --text3: #555b70;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-sub {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: var(--mono);
+    margin-top: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .auth-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--text2);
+  }
+
+  .auth-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text3);
+  }
+
+  .auth-dot.connected { background: var(--green); box-shadow: 0 0 8px rgba(62,207,142,0.5); }
+  .auth-dot.error { background: var(--red); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .btn:hover { background: var(--border); border-color: var(--border2); }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #6a9ef8; border-color: #6a9ef8; }
+
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-danger { border-color: #f76e6e33; color: var(--red); }
+  .btn-danger:hover { background: #f76e6e15; }
+
+  /* Auth screen */
+  #auth-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 48px 56px;
+    max-width: 440px;
+    width: 100%;
+  }
+
+  .auth-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+
+  .auth-card h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .auth-card p {
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .auth-scope-list {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: left;
+    margin-bottom: 24px;
+  }
+
+  .auth-scope-list .scope-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--text2);
+    font-family: var(--mono);
+  }
+
+  .scope-item::before { content: '✓'; color: var(--green); }
+
+  /* Main app */
+  #app-screen { display: none; }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+
+  .stat-value.accent { color: var(--accent2); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.yellow { color: var(--yellow); }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .filter-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .filter-input:focus { border-color: var(--accent); }
+  .filter-input::placeholder { color: var(--text3); }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .filter-select:focus { border-color: var(--accent); }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    border: none;
+    background: none;
+  }
+
+  .tab.active {
+    background: var(--surface2);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* Email table */
+  .email-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 11px 16px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .sender-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sender-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
+
+  .sender-name {
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .sender-email {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: var(--mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .subject-cell {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  .snippet-cell {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text2);
+    font-size: 12px;
+  }
+
+  .date-cell {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .tag-new { background: rgba(79,142,247,0.15); color: var(--accent2); }
+  .tag-fundraise { background: rgba(247,201,72,0.12); color: var(--yellow); }
+  .tag-event { background: rgba(167,139,250,0.12); color: var(--purple); }
+  .tag-update { background: rgba(62,207,142,0.12); color: var(--green); }
+  .tag-other { background: rgba(139,144,160,0.12); color: var(--text2); }
+
+  /* Sender manager */
+  .sender-manager {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .sender-manager-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .sender-manager-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .sender-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  .sender-item:last-child { border-bottom: none; }
+  .sender-item:hover { background: var(--surface2); }
+
+  .sender-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sender-info h4 { font-size: 13px; font-weight: 500; }
+  .sender-info p { font-size: 11px; color: var(--text2); font-family: var(--mono); margin-top: 1px; }
+
+  .sender-count {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text3);
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* Add sender form */
+  .add-sender-row {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+
+  .add-sender-row input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+  }
+
+  .add-sender-row input:focus { border-color: var(--accent); }
+  .add-sender-row input::placeholder { color: var(--text3); }
+
+  /* Email detail modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--surface2);
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 4px;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .modal-meta {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .modal-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .modal-meta-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-meta-value {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+    line-height: 1.7;
+    color: var(--text2);
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Loading / empty states */
+  .loading-state, .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    color: var(--text3);
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Digest view */
+  .digest-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .digest-sender-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .digest-sender-header:hover { background: var(--border); }
+
+  .digest-sender-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .digest-sender-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .digest-count-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+
+  .digest-email-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .digest-email-row:last-child { border-bottom: none; }
+  .digest-email-row:hover { background: var(--surface2); }
+
+  .digest-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .digest-subject {
+    flex: 1;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .digest-collapse-icon {
+    font-size: 16px;
+    color: var(--text3);
+    transition: transform 0.2s;
+  }
+
+  .digest-card.collapsed .digest-email-rows { display: none; }
+  .digest-card.collapsed .digest-collapse-icon { transform: rotate(-90deg); }
+
+  /* Log view */
+  .log-entry {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .log-ts { color: var(--text3); width: 110px; flex-shrink: 0; }
+  .log-sender { color: var(--accent2); width: 140px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; }
+  .log-subject { color: var(--text2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Notification toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 200;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  .section-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .chevron { display: inline-block; transition: transform 0.2s; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header>
+    <div class="logo-area">
+      <div class="logo-mark">WW</div>
+      <div>
+        <div class="logo-text">Campaign Email Monitor</div>
+        <div class="logo-sub">WestWest Digital</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="auth-status">
+        <div class="auth-dot" id="auth-dot"></div>
+        <span id="auth-label">Not connected</span>
+      </div>
+      <button class="btn btn-sm" id="refresh-btn" style="display:none" onclick="fetchEmails()">↻ Refresh</button>
+      <button class="btn btn-sm btn-danger" id="signout-btn" style="display:none" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-icon">📬</div>
+      <h2>Connect Gmail</h2>
+      <p>Sign in with the Google account that's subscribed to campaign emails. Read-only access — we never modify or send anything.</p>
+      <div class="auth-scope-list">
+        <div class="scope-item">Read Gmail messages (read-only)</div>
+        <div class="scope-item">Search and filter by sender</div>
+        <div class="scope-item">No write or send access</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="startAuth()">
+        Connect Gmail →
+      </button>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen">
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Emails tracked</div>
+        <div class="stat-value accent" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Campaigns monitored</div>
+        <div class="stat-value" id="stat-campaigns">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last 7 days</div>
+        <div class="stat-value green" id="stat-week">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value yellow" id="stat-today">—</div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('inbox')" id="tab-inbox">📥 All Emails</button>
+      <button class="tab" onclick="switchTab('digest')" id="tab-digest">📋 Digest</button>
+      <button class="tab" onclick="switchTab('log')" id="tab-log">🗒 Log</button>
+      <button class="tab" onclick="switchTab('senders')" id="tab-senders">⚙️ Senders</button>
+    </div>
+
+    <!-- All Emails tab -->
+    <div id="view-inbox">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="filter-input" type="text" placeholder="Search subject or sender…" id="search-input" oninput="renderEmails()">
+          <select class="filter-select" id="filter-sender" onchange="renderEmails()">
+            <option value="">All senders</option>
+          </select>
+          <select class="filter-select" id="filter-days" onchange="renderEmails()">
+            <option value="0">All time</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        <div id="result-count" style="font-size:12px;font-family:var(--mono);color:var(--text3)"></div>
+      </div>
+
+      <div class="email-table-wrap">
+        <div id="email-table-content">
+          <div class="loading-state"><div class="spinner"></div><span>Loading emails…</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Digest tab -->
+    <div id="view-digest" style="display:none">
+      <div id="digest-content">
+        <div class="loading-state"><div class="spinner"></div><span>Loading…</span></div>
+      </div>
+    </div>
+
+    <!-- Log tab -->
+    <div id="view-log" style="display:none">
+      <div class="email-table-wrap" style="padding:16px 20px">
+        <div class="section-title">Chronological email log</div>
+        <div id="log-content">
+          <div class="loading-state"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Senders tab -->
+    <div id="view-senders" style="display:none">
+      <div class="sender-manager">
+        <div class="sender-manager-header">
+          <h3>Monitored Senders</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:var(--mono)" id="sender-count-label"></span>
+        </div>
+        <div id="sender-list"></div>
+        <div class="add-sender-row">
+          <input type="text" id="new-sender-name" placeholder="Campaign / candidate name" />
+          <input type="text" id="new-sender-email" placeholder="email@example.com or domain.com" style="flex:1.4" />
+          <button class="btn btn-primary btn-sm" onclick="addSender()">+ Add</button>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button class="btn" onclick="fetchEmails()">↻ Re-fetch all emails</button>
+        <button class="btn btn-danger" onclick="clearAllData()">🗑 Clear all data</button>
+      </div>
+    </div>
+
+  </div><!-- /app-screen -->
+</div><!-- /shell -->
+
+<!-- Email detail modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-subject"></h3>
+      <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+const CLIENT_ID = '467369402045-l7lvpgfssbllnuc4u1cdtlaq0js0apc3.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
+const REDIRECT_URI = window.location.href.split('?')[0].split('#')[0];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let accessToken = null;
+let emails = []; // { id, subject, from, fromName, date, snippet, body, labels }
+let senders = JSON.parse(localStorage.getItem('ww-senders') || '[]');
+let currentTab = 'inbox';
+
+// Default starter senders (user can remove)
+if (senders.length === 0) {
+  senders = [
+    { id: 1, name: 'Example Campaign', query: 'example@campaign.com' }
+  ];
+  saveSenders();
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+function startAuth() {
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'token',
+    scope: SCOPES,
+    prompt: 'select_account',
+  });
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+}
+
+function checkAuthCallback() {
+  const hash = window.location.hash;
+  if (!hash) return false;
+  const params = new URLSearchParams(hash.substring(1));
+  const token = params.get('access_token');
+  if (token) {
+    accessToken = token;
+    window.history.replaceState(null, '', window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+function signOut() {
+  accessToken = null;
+  emails = [];
+  showAuthScreen();
+}
+
+// ─── UI State ─────────────────────────────────────────────────────────────────
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('refresh-btn').style.display = 'none';
+  document.getElementById('signout-btn').style.display = 'none';
+  setAuthStatus('disconnected');
+}
+
+function showAppScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('refresh-btn').style.display = 'inline-flex';
+  document.getElementById('signout-btn').style.display = 'inline-flex';
+  setAuthStatus('connected');
+  fetchEmails();
+}
+
+function setAuthStatus(state) {
+  const dot = document.getElementById('auth-dot');
+  const label = document.getElementById('auth-label');
+  if (state === 'connected') {
+    dot.className = 'auth-dot connected';
+    label.textContent = 'Connected';
+  } else if (state === 'error') {
+    dot.className = 'auth-dot error';
+    label.textContent = 'Error';
+  } else {
+    dot.className = 'auth-dot';
+    label.textContent = 'Not connected';
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  ['inbox', 'digest', 'log', 'senders'].forEach(t => {
+    document.getElementById(`view-${t}`).style.display = t === tab ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
+  if (tab === 'digest') renderDigest();
+  if (tab === 'log') renderLog();
+  if (tab === 'senders') renderSenderList();
+}
+
+function showToast(msg, duration = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ─── Gmail API ────────────────────────────────────────────────────────────────
+async function gmailFetch(url) {
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (res.status === 401) { signOut(); throw new Error('Token expired'); }
+  return res.json();
+}
+
+async function fetchEmails() {
+  if (!accessToken) return;
+  if (senders.length === 0) {
+    setTableContent('<div class="empty-state">No senders configured. Add some in the Senders tab.</div>');
+    return;
+  }
+
+  setTableContent('<div class="loading-state"><div class="spinner"></div><span>Fetching emails…</span></div>');
+  emails = [];
+
+  try {
+    // Build query from all senders
+    const queryParts = senders.map(s => {
+      const q = s.query.trim();
+      if (q.includes('@') || q.includes('.')) return `from:${q}`;
+      return `from:${q}`;
+    });
+    const query = queryParts.join(' OR ');
+
+    // Fetch message IDs (up to 200)
+    const listData = await gmailFetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=200&q=${encodeURIComponent(query)}`
+    );
+
+    if (!listData.messages || listData.messages.length === 0) {
+      emails = [];
+      renderAll();
+      showToast('No emails found for configured senders');
+      return;
+    }
+
+    showToast(`Found ${listData.messages.length} messages, loading details…`);
+
+    // Fetch details in batches of 20
+    const ids = listData.messages.map(m => m.id);
+    const batches = [];
+    for (let i = 0; i < ids.length; i += 20) batches.push(ids.slice(i, i + 20));
+
+    for (const batch of batches) {
+      await Promise.all(batch.map(id => fetchMessage(id)));
+    }
+
+    emails.sort((a, b) => b.date - a.date);
+    renderAll();
+    showToast(`✓ Loaded ${emails.length} emails`);
+
+  } catch (err) {
+    console.error(err);
+    setTableContent(`<div class="empty-state">Error: ${err.message}</div>`);
+    setAuthStatus('error');
+  }
+}
+
+async function fetchMessage(id) {
+  try {
+    const data = await gmailFetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`
+    );
+    const headers = data.payload?.headers || [];
+    const get = name => headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
+
+    const fromRaw = get('From');
+    const { name: fromName, email: fromEmail } = parseFrom(fromRaw);
+    const subject = get('Subject') || '(no subject)';
+    const date = parseInt(data.internalDate) || 0;
+    const snippet = data.snippet || '';
+
+    // Extract plain text body
+    const body = extractBody(data.payload);
+
+    emails.push({ id, subject, from: fromEmail, fromName, date, snippet, body });
+  } catch (e) { /* skip failed message */ }
+}
+
+function extractBody(payload) {
+  if (!payload) return '';
+  const parts = payload.parts || [];
+  // Try plain text first
+  for (const part of parts) {
+    if (part.mimeType === 'text/plain' && part.body?.data) {
+      return atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+    }
+  }
+  // Recurse into multipart
+  for (const part of parts) {
+    const result = extractBody(part);
+    if (result) return result;
+  }
+  // Direct body
+  if (payload.body?.data) {
+    return atob(payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+  }
+  return '';
+}
+
+function parseFrom(from) {
+  const match = from.match(/^(.+?)\s*<(.+?)>$/);
+  if (match) return { name: match[1].replace(/"/g, '').trim(), email: match[2].trim() };
+  return { name: from, email: from };
+}
+
+// ─── Rendering ────────────────────────────────────────────────────────────────
+function renderAll() {
+  updateStats();
+  renderEmails();
+  updateSenderFilter();
+  if (currentTab === 'digest') renderDigest();
+  if (currentTab === 'log') renderLog();
+}
+
+function updateStats() {
+  const now = Date.now();
+  const week = now - 7 * 86400000;
+  const today = now - 86400000;
+  document.getElementById('stat-total').textContent = emails.length;
+  document.getElementById('stat-campaigns').textContent = new Set(emails.map(e => e.from)).size;
+  document.getElementById('stat-week').textContent = emails.filter(e => e.date > week).length;
+  document.getElementById('stat-today').textContent = emails.filter(e => e.date > today).length;
+}
+
+function getFilteredEmails() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const senderFilter = document.getElementById('filter-sender').value;
+  const days = parseInt(document.getElementById('filter-days').value);
+  const cutoff = days ? Date.now() - days * 86400000 : 0;
+
+  return emails.filter(e => {
+    if (cutoff && e.date < cutoff) return false;
+    if (senderFilter && e.from !== senderFilter) return false;
+    if (search && !e.subject.toLowerCase().includes(search) && !e.fromName.toLowerCase().includes(search) && !e.from.toLowerCase().includes(search)) return false;
+    return true;
+  });
+}
+
+function renderEmails() {
+  const filtered = getFilteredEmails();
+  document.getElementById('result-count').textContent = `${filtered.length} email${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    setTableContent('<div class="empty-state">No emails match the current filters.</div>');
+    return;
+  }
+
+  const rows = filtered.map(e => `
+    <tr onclick="openModal('${e.id}')">
+      <td>
+        <div class="sender-cell">
+          <div class="sender-avatar" style="${avatarStyle(e.from)}">
+            ${(e.fromName || e.from).charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div class="sender-name">${esc(e.fromName || e.from)}</div>
+            <div class="sender-email">${esc(e.from)}</div>
+          </div>
+        </div>
+      </td>
+      <td class="subject-cell">${esc(e.subject)}</td>
+      <td class="snippet-cell">${esc(e.snippet)}</td>
+      <td class="date-cell">${formatDate(e.date)}</td>
+      <td><span class="tag ${classifyTag(e)}">${classifyLabel(e)}</span></td>
+    </tr>
+  `).join('');
+
+  setTableContent(`
+    <table>
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>Subject</th>
+          <th>Preview</th>
+          <th>Date</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `);
+}
+
+function renderDigest() {
+  const bySender = {};
+  emails.forEach(e => {
+    const key = e.from;
+    if (!bySender[key]) bySender[key] = { name: e.fromName || e.from, email: e.from, emails: [] };
+    bySender[key].emails.push(e);
+  });
+
+  const sorted = Object.values(bySender).sort((a, b) => b.emails.length - a.emails.length);
+
+  if (sorted.length === 0) {
+    document.getElementById('digest-content').innerHTML = '<div class="empty-state">No emails loaded yet.</div>';
+    return;
+  }
+
+  const html = sorted.map((s, i) => `
+    <div class="digest-card" id="digest-${i}">
+      <div class="digest-sender-header" onclick="toggleDigest(${i})">
+        <div class="digest-sender-left">
+          <div class="sender-avatar" style="${avatarStyle(s.email)}">
+            ${s.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div class="digest-sender-name">${esc(s.name)}</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">${esc(s.email)}</div>
+          </div>
+          <span class="digest-count-badge">${s.emails.length}</span>
+        </div>
+        <span class="digest-collapse-icon">▾</span>
+      </div>
+      <div class="digest-email-rows">
+        ${s.emails.map(e => `
+          <div class="digest-email-row" onclick="openModal('${e.id}')">
+            <div class="digest-date">${formatDate(e.date)}</div>
+            <div class="digest-subject">${esc(e.subject)}</div>
+            <span class="tag ${classifyTag(e)}" style="flex-shrink:0">${classifyLabel(e)}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('digest-content').innerHTML = html;
+}
+
+function toggleDigest(i) {
+  document.getElementById(`digest-${i}`).classList.toggle('collapsed');
+}
+
+function renderLog() {
+  if (emails.length === 0) {
+    document.getElementById('log-content').innerHTML = '<div class="empty-state">No emails loaded.</div>';
+    return;
+  }
+
+  const rows = emails.map(e => `
+    <div class="log-entry" onclick="openModal('${e.id}')" style="cursor:pointer">
+      <div class="log-ts">${formatDateShort(e.date)}</div>
+      <div class="log-sender">${esc((e.fromName || e.from).substring(0, 18))}</div>
+      <div class="log-subject">${esc(e.subject)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('log-content').innerHTML = rows;
+}
+
+function renderSenderList() {
+  document.getElementById('sender-count-label').textContent = `${senders.length} sender${senders.length !== 1 ? 's' : ''}`;
+  const emailCounts = {};
+  emails.forEach(e => { emailCounts[e.from] = (emailCounts[e.from] || 0) + 1; });
+
+  const html = senders.length === 0
+    ? '<div class="empty-state" style="padding:32px">No senders yet. Add one below.</div>'
+    : senders.map(s => `
+      <div class="sender-item">
+        <div class="sender-item-left">
+          <div class="sender-avatar" style="${avatarStyle(s.query)}">
+            ${s.name.charAt(0).toUpperCase()}
+          </div>
+          <div class="sender-info">
+            <h4>${esc(s.name)}</h4>
+            <p>${esc(s.query)}</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="sender-count">${emailCounts[s.query] || 0} emails</span>
+          <button class="btn btn-sm btn-danger" onclick="removeSender(${s.id})">Remove</button>
+        </div>
+      </div>
+    `).join('');
+
+  document.getElementById('sender-list').innerHTML = html;
+}
+
+function updateSenderFilter() {
+  const select = document.getElementById('filter-sender');
+  const unique = [...new Set(emails.map(e => e.from))].sort();
+  const current = select.value;
+  select.innerHTML = '<option value="">All senders</option>' +
+    unique.map(f => `<option value="${esc(f)}" ${f === current ? 'selected' : ''}>${esc(f)}</option>`).join('');
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  const e = emails.find(em => em.id === id);
+  if (!e) return;
+  document.getElementById('modal-subject').textContent = e.subject;
+  document.getElementById('modal-meta').innerHTML = `
+    <div class="modal-meta-item">
+      <div class="modal-meta-label">From</div>
+      <div class="modal-meta-value">${esc(e.fromName)} &lt;${esc(e.from)}&gt;</div>
+    </div>
+    <div class="modal-meta-item">
+      <div class="modal-meta-label">Date</div>
+      <div class="modal-meta-value">${new Date(e.date).toLocaleString()}</div>
+    </div>
+    <div class="modal-meta-item">
+      <div class="modal-meta-label">Type</div>
+      <div class="modal-meta-value"><span class="tag ${classifyTag(e)}">${classifyLabel(e)}</span></div>
+    </div>
+  `;
+  document.getElementById('modal-body').textContent = e.body || e.snippet || '(no content)';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// ─── Senders ──────────────────────────────────────────────────────────────────
+function addSender() {
+  const name = document.getElementById('new-sender-name').value.trim();
+  const query = document.getElementById('new-sender-email').value.trim();
+  if (!name || !query) { showToast('Please fill in both fields'); return; }
+  senders.push({ id: Date.now(), name, query });
+  saveSenders();
+  document.getElementById('new-sender-name').value = '';
+  document.getElementById('new-sender-email').value = '';
+  renderSenderList();
+  showToast(`Added "${name}"`);
+}
+
+function removeSender(id) {
+  senders = senders.filter(s => s.id !== id);
+  saveSenders();
+  renderSenderList();
+  showToast('Sender removed');
+}
+
+function saveSenders() {
+  localStorage.setItem('ww-senders', JSON.stringify(senders));
+}
+
+function clearAllData() {
+  if (!confirm('Clear all senders and cached data?')) return;
+  senders = [];
+  emails = [];
+  saveSenders();
+  renderAll();
+  renderSenderList();
+  showToast('Cleared');
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function setTableContent(html) {
+  document.getElementById('email-table-content').innerHTML = html;
+}
+
+function esc(str) {
+  return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays === 0) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric', year: diffDays > 365 ? 'numeric' : undefined });
+}
+
+function formatDateShort(ts) {
+  return new Date(ts).toLocaleDateString([], { month: 'numeric', day: 'numeric', year: '2-digit' });
+}
+
+const AVATAR_COLORS = ['#4f8ef7','#3ecf8e','#f7c948','#f76e6e','#a78bfa','#f97316','#06b6d4','#ec4899'];
+function avatarStyle(seed) {
+  let hash = 0;
+  for (const c of (seed || '')) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+  const color = AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  return `background:${color}22;color:${color}`;
+}
+
+function classifyTag(e) {
+  const text = (e.subject + ' ' + e.snippet).toLowerCase();
+  if (text.includes('donate') || text.includes('chip in') || text.includes('$') || text.includes('fund') || text.includes('contribut')) return 'tag-fundraise';
+  if (text.includes('event') || text.includes('rally') || text.includes('join us') || text.includes('volunteer')) return 'tag-event';
+  if (text.includes('update') || text.includes('news') || text.includes('announcement')) return 'tag-update';
+  return 'tag-other';
+}
+
+function classifyLabel(e) {
+  const cls = classifyTag(e);
+  return { 'tag-fundraise': 'Fundraise', 'tag-event': 'Event', 'tag-update': 'Update', 'tag-other': 'Other' }[cls];
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(function init() {
+  const authed = checkAuthCallback();
+  if (authed) {
+    showAppScreen();
+  } else {
+    showAuthScreen();
+  }
+})();
+</script>
+</body>
+</html>
